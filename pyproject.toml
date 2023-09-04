@@ -4,12 +4,13 @@ requires = [
     "wheel",
     "ninja",
     "cmake>=3.12",
+    "numpy"
 ]
 build-backend = "setuptools.build_meta"
 
 [tool.mypy]
 files = "setup.py"
-python_version = "3.7"
+python_version = "3.11"
 strict = true
 show_error_codes = true
 enable_error_code = ["ignore-without-code", "redundant-expr", "truthy-bool"]
@@ -49,4 +50,4 @@ extend-select = [
 extend-ignore = [
   "E501",   # Line too long
 ]
-target-version = "py37"
+target-version = "py311"

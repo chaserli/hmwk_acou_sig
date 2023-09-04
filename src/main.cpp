@@ -1,43 +1,51 @@
 #include <pybind11/pybind11.h>
+#include <pybind11/numpy.h>
+#include <pybind11/iostream.h>
+#include <pybind11/stl.h>
+#include <pybind11/eigen.h>
 
-#define STRINGIFY(x) #x
-#define MACRO_STRINGIFY(x) STRINGIFY(x)
+#include "dummy.hpp"
 
-int add(int i, int j) {
+namespace py = pybind11;
+namespace Examples{
+
+template <Addable T>
+T add(T i, T j)
+{
+    py::print("adding 2 ", typeid(T).name());
     return i + j;
 }
 
+float q_rsqrt(float num)
+{
+    static_assert(std::numeric_limits<float>::is_iec559);
+    float y = std::bit_cast<float>(0x5F3759DF - (std::bit_cast<uint32_t>(num) >> 1));
+    y *= 1.5f - (num * y * y * 0.5f);
+    y *= 1.5f - (num * y * y * 0.5f);
+    y *= 1.5f - (num * y * y * 0.5f);
+    return y;
+}
+
+std::complex<double> hankel01(double r)
+{
+    std::complex<double> j0 = std::cyl_bessel_j(0, r);
+    std::complex<double> y0 = std::cyl_neumann(0, r);
+    return j0 + std::complex<double>{0.0, 1.0} * y0;
+}
+
+}
 namespace py = pybind11;
 
-PYBIND11_MODULE(cmake_example, m) {
-    m.doc() = R"pbdoc(
-        Pybind11 example plugin
-        -----------------------
+PYBIND11_MODULE(tmphmwk, m) {
+    m.doc() = "dummy doc";
+    m.attr("CompiledBy")=Examples::CompilerInfo;
 
-        .. currentmodule:: cmake_example
+    m.def("add",py::vectorize(Examples::add<double>));
+    m.def("add",py::vectorize(Examples::add<std::complex<double>>));
+    m.def("add",Examples::add<std::string>);
 
-        .. autosummary::
-           :toctree: _generate
+    m.def("fqrsqrt",py::vectorize(Examples::q_rsqrt),"fast inv sqrt");
+    m.def("hankel01",py::vectorize(Examples::hankel01),"H_0^1 but stl");
 
-           add
-           subtract
-    )pbdoc";
-
-    m.def("add", &add, R"pbdoc(
-        Add two numbers
-
-        Some other explanation about the add function.
-    )pbdoc");
-
-    m.def("subtract", [](int i, int j) { return i - j; }, R"pbdoc(
-        Subtract two numbers
-
-        Some other explanation about the subtract function.
-    )pbdoc");
-
-#ifdef VERSION_INFO
-    m.attr("__version__") = MACRO_STRINGIFY(VERSION_INFO);
-#else
-    m.attr("__version__") = "dev";
-#endif
+    m.def("TestTimes",TestEigen::Times);
 }
