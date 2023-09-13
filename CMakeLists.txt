@@ -24,8 +24,35 @@ endif()
 
 target_link_libraries(${PROJECT_NAME} PRIVATE Eigen3::Eigen)
 
+
+if(NOT WIN32)
+find_package(FFTW3 REQUIRED)
+target_link_libraries(${PROJECT_NAME} PUBLIC fftw3)
+else()
+# fftw3.h,libfftw3-3.dll,libfftw3-3.lib
+target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/winfftw)
+target_link_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/winfftw)
+target_link_libraries(${PROJECT_NAME} PRIVATE libfftw3-3)
+endif()
+
+
+
 if(NOT MSVC)
 if(NOT "${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
 target_link_libraries(${PROJECT_NAME} PRIVATE -static-libstdc++ -static-libgcc)
 endif()
+endif()
+
+message("Python is " ${PYTHON_EXECUTABLE})
+message("Python prefix is " ${PYTHON_PREFIX})
+
+if(WIN32)
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${PROJECT_SOURCE_DIR}/winfftw/libfftw3-3.dll $<TARGET_FILE_DIR:${PROJECT_NAME}>
+        )
+add_custom_target(CopyFiles DEPENDS
+        ${PROJECT_SOURCE_DIR}/winfftw/libfftw3-3.dll
+        )
+add_dependencies(${PROJECT_NAME} CopyFiles)
 endif()

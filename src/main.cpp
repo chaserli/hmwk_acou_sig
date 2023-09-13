@@ -6,6 +6,8 @@
 
 #include "dummy.hpp"
 
+#include <fftw3.h>
+
 namespace py = pybind11;
 namespace Examples{
 
@@ -28,17 +30,42 @@ float q_rsqrt(float num)
 
 std::complex<double> hankel01(double r)
 {
-    std::complex<double> j0 = std::cyl_bessel_j(0, r);
-    std::complex<double> y0 = std::cyl_neumann(0, r);
-    return j0 + std::complex<double>{0.0, 1.0} * y0;
+    return std::complex<double>{std::cyl_bessel_j(0, r),std::cyl_neumann(0, r)};
 }
 
 }
+
+py::array_t<std::complex<double>> fftw_transform1d(py::array_t<std::complex<double>, py::array::c_style | py::array::forcecast> input_array) {
+    // request a mutable buffer proxy to the data
+    py::buffer_info buf_info = input_array.request();
+
+    // check dimensions
+    if (buf_info.ndim != 1)
+        throw std::runtime_error("Number of dimensions must be 1");
+
+    // Create new array for output
+    auto result = py::array_t<std::complex<double>>(buf_info.size);
+
+    // setup FFTW plan
+    fftw_plan p = fftw_plan_dft_1d(buf_info.shape[0]
+    , reinterpret_cast<fftw_complex *>(buf_info.ptr),reinterpret_cast<fftw_complex*>(result.request().ptr)
+    , FFTW_FORWARD, FFTW_ESTIMATE);
+
+    // execute the plan
+    fftw_execute(p);
+
+    // do cleanup
+    fftw_destroy_plan(p);
+
+    return result;
+}
+
 namespace py = pybind11;
 
 PYBIND11_MODULE(tmphmwk, m) {
     m.doc() = "dummy doc";
     m.attr("CompiledBy")=Examples::CompilerInfo;
+    m.attr("version")=114514;
 
     m.def("add",py::vectorize(Examples::add<double>));
     m.def("add",py::vectorize(Examples::add<std::complex<double>>));
@@ -48,4 +75,5 @@ PYBIND11_MODULE(tmphmwk, m) {
     m.def("hankel01",py::vectorize(Examples::hankel01),"H_0^1 but stl");
 
     m.def("TestTimes",TestEigen::Times);
+    m.def("fftw1d",fftw_transform1d,"rfft1d from fftw");
 }
