@@ -1,14 +1,51 @@
 import tmphmwk as mymod
 import numpy as np
+import time
+x = np.random.randn(33333333)
+def time1():
+    t0=time.time()
+    y = np.fft.fft(x)
+    t1=time.time()
+    print(f"numpy pocket fft : {t1-t0}")
+
+def time2():
+    t0=time.time()
+    y = mymod.fftw1d(x)
+    t1=time.time()
+    print(f"regular fftw call : {t1-t0}")
+
+def time3():
+    t0=time.time()
+    y = mymod.fftw1d_omp(x)
+    t1=time.time()
+    print(f"omp fftw call : {t1-t0}")
+
+def time4():
+    t0=time.time()
+    y = mymod.fftw1d_ompnogil(x)
+    t1=time.time()
+    print(f"omp nogil fftw call : {t1-t0}")
+
+def prepare():
+    t = [1,2,3,4,5,6,7,8]
+    y=np.fft.fft(t)
+    y=mymod.fftw1d(t)
+    y=mymod.fftw1d_omp(t)
+    y=mymod.fftw1d_ompnogil(t)
+    return y
 
 def test_main():
-    print(mymod.CompiledBy)
-    print(mymod.add(1,2))
-    print(mymod.add(1j,2))
-    print(mymod.add('what ',mymod.add('is ','this')))
-    print(mymod.add(np.asarray([1,2,3]),np.asarray([4,5,6])))
-    print(mymod.add(np.asarray([1,2,3],dtype=np.complex128),np.asarray([4j,5j,6j])))
-    assert(abs(mymod.fqrsqrt(0.25)-1/np.sqrt(0.25))<1e-5)
+    time1()
+    time2()
+    time3()
+    time4()
 
 if __name__ == "__main__":
+    prepare()
+    test_main()
+    print('---------try again----------')
+    x = np.random.randn(33333333)
+    test_main()
+    print('---------try again----------')
+    x = np.random.randn(33333333)
     test_main()

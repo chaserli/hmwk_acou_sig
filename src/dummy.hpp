@@ -7,22 +7,18 @@
 #include <string>
 
 #include <Python.h>
-#include <Eigen/Dense>
+#include <pybind11/pybind11.h>
+#include <pybind11/numpy.h>
 
 #define _WSTR(x) _WSTR_(x)
 #define _WSTR_(x) L ## #x
 #define _STR(x) _STR_(x)
 #define _STR_(x) #x
 
-template <typename T>
-concept Addable = requires(T a, T b) {
-    {a + b} -> std::same_as<T>;
-};
-
 namespace Examples{
 
 constexpr const char* CompilerInfo=
-    "This module is compiled by "
+
 #ifdef __clang__
            "Clang version: " _STR(__clang_major__) "." _STR(__clang_minor__) "." _STR(__clang_patchlevel__) " "
 #endif
@@ -48,8 +44,10 @@ constexpr const char* CompilerInfo=
 
 }
 
-namespace TestEigen{
-
-Eigen::MatrixXd Times(Eigen::MatrixXd &A, Eigen::MatrixXd &B);
-
+namespace TestFFT
+{
+    namespace py = pybind11;
+    py::array_t<std::complex<double>> fftw1d_omp_nogil(py::array_t<std::complex<double>, py::array::c_style | py::array::forcecast> input_array);
+    py::array_t<std::complex<double>> fftw1d_omp(py::array_t<std::complex<double>, py::array::c_style | py::array::forcecast> input_array);
+    py::array_t<std::complex<double>> fftw1d(py::array_t<std::complex<double>, py::array::c_style | py::array::forcecast> input_array);
 }

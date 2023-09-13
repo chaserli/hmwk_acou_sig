@@ -7,6 +7,10 @@ project(tmphmwk)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+if("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
+message(FATAL_ERROR "Clang sucks with anaconda libstdc++ version atm")
+endif()
+
 add_subdirectory(eigen)
 find_package(Eigen3 REQUIRED)
 find_package(OpenMP)
@@ -18,11 +22,6 @@ file(GLOB_RECURSE SOURCES "src/*.cpp")
 
 pybind11_add_module(${PROJECT_NAME} ${SOURCES})
 
-if(OpenMP_FOUND)
-target_link_libraries(${PROJECT_NAME} PUBLIC OpenMP::OpenMP_CXX)
-endif()
-
-target_link_libraries(${PROJECT_NAME} PRIVATE Eigen3::Eigen)
 
 
 if(NOT WIN32)
@@ -33,14 +32,19 @@ else()
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/winfftw)
 target_link_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/winfftw)
 target_link_libraries(${PROJECT_NAME} PRIVATE libfftw3-3)
+set(FFTW_ROOT ${PROJECT_SOURCE_DIR}/winfftw)
+set(FFTW_FOUND ON)
+endif()
+target_compile_definitions(${PROJECT_NAME} PUBLIC EIGEN_FFTW_DEFAULT)
+if(OpenMP_FOUND)
+target_link_libraries(${PROJECT_NAME} PUBLIC OpenMP::OpenMP_CXX)
 endif()
 
+target_link_libraries(${PROJECT_NAME} PRIVATE Eigen3::Eigen)
 
 
 if(NOT MSVC)
-if(NOT "${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
 target_link_libraries(${PROJECT_NAME} PRIVATE -static-libstdc++ -static-libgcc)
-endif()
 endif()
 
 message("Python is " ${PYTHON_EXECUTABLE})
