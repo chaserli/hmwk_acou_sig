@@ -28,7 +28,7 @@ PYBIND11_MODULE(tmphmwk, m) {
     m.def("hankel01",py::vectorize(Examples::hankel01),"H_0^1 but stl");
 
 
-    m.def("fftw1d",TestFFT::fftw1d,"fft1d from fftw");
-    m.def("fftw1d_omp",TestFFT::fftw1d_omp,"fft1d from fftw but omp");
-    m.def("fftw1d_ompnogil",TestFFT::fftw1d_omp_nogil,"fftw1d from fftw but omp and release gil");
+    m.def("fftw1d",TestFFT::fftw1d,py::call_guard<py::gil_scoped_release>());
+    m.def("fftw1d_omp",TestFFT::fftw1d_omp, py::call_guard<py::gil_scoped_release>());
+    m.def("fftw1d_omp_manual",TestFFT::fftw1d_omp_nogil);
 }

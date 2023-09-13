@@ -110,6 +110,8 @@ namespace TestFFT
     }
     py::array_t<std::complex<double>> fftw1d(py::array_t<std::complex<double>, py::array::c_style | py::array::forcecast> input_array)
     {
+        // for comparison, reset nthread used
+        fftw_plan_with_nthreads(1);
         // request a mutable buffer proxy to the data
         py::buffer_info buf_info = input_array.request();
 
