@@ -7,8 +7,6 @@
 #include <string>
 
 #include <Python.h>
-#include <pybind11/pybind11.h>
-#include <pybind11/numpy.h>
 
 #define _WSTR(x) _WSTR_(x)
 #define _WSTR_(x) L ## #x
@@ -39,15 +37,7 @@ constexpr const char* CompilerInfo=
 #elif defined(__linux__)
                "Linux"
 #endif
- " For Python " PY_VERSION
+ " for Python " PY_VERSION
        ;
 
-}
-
-namespace TestFFT
-{
-    namespace py = pybind11;
-    py::array_t<std::complex<double>> fftw1d_omp_nogil(py::array_t<std::complex<double>, py::array::c_style | py::array::forcecast> input_array);
-    py::array_t<std::complex<double>> fftw1d_omp(py::array_t<std::complex<double>, py::array::c_style | py::array::forcecast> input_array);
-    py::array_t<std::complex<double>> fftw1d(py::array_t<std::complex<double>, py::array::c_style | py::array::forcecast> input_array);
 }
