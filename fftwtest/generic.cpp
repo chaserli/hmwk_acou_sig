@@ -32,5 +32,7 @@ py::array_t<std::complex<double>> fftw1d(py::array_t<std::complex<double>, py::a
 
 PYBIND11_MODULE(testfftw1dnormal, m)
 {
+    py::print("generic fftw_plan_dft_1d loaded");
     m.def("generic", &fftw1d);
+    m.def("forget_wisdom",&fftw_forget_wisdom);
 }

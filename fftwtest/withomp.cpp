@@ -48,5 +48,6 @@ py::array_t<std::complex<double>> manual_nogil(py::array_t<std::complex<double>,
 
 PYBIND11_MODULE(testfftw1domp, m)
 {
+    py::print("omp fftw_plan_dft_1d loaded");
     m.def("manualomp",&manual_nogil);
 }
