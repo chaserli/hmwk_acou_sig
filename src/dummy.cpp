@@ -3,7 +3,7 @@
 #ifdef __linux__
 void __attribute__((constructor)) load_so()
 {
-    std::cout << "Dll loaded\n";
+    std::cout << "Dll attached\n";
 }
 
 void __attribute__((destructor)) unload_so()

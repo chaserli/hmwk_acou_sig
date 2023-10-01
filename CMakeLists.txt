@@ -7,15 +7,17 @@ project(tmphmwk)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-if("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
-message(FATAL_ERROR "Clang sucks with anaconda libstdc++ version atm")
-endif()
+#if("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
+#message(FATAL_ERROR "Clang sucks with anaconda libstdc++ version atm")
+#endif()
+
+add_compile_definitions(PYBIND11_NOINLINE_DISABLED)
 
 find_package(OpenMP)
-set(PYBIND11_FINDPYTHON ON)
+#set(PYBIND11_FINDPYTHON ON)
 add_subdirectory(pybind11)
-find_package(Python3 REQUIRED)
 
+include_directories(inc)
 
 pybind11_add_module(testfftw1dnormal fftwtest/generic.cpp)
 pybind11_add_module(testfftw1domp fftwtest/withomp.cpp)
@@ -24,8 +26,8 @@ pybind11_add_module(${PROJECT_NAME} ${KSOURCES})
 
 if(NOT WIN32)
 find_package(FFTW3 REQUIRED)
-target_link_libraries(testfftw1dnormal PUBLIC fftw3 fftw_omp)
-target_link_libraries(testfftw1domp PUBLIC fftw3 fftw_omp)
+target_link_libraries(testfftw1dnormal PUBLIC fftw3 fftw3_omp)
+target_link_libraries(testfftw1domp PUBLIC fftw3 fftw3_omp)
 else()
 # fftw3.h,libfftw3-3.dll,libfftw3-3.lib
 target_include_directories(testfftw1dnormal PUBLIC ${PROJECT_SOURCE_DIR}/winfftw)
@@ -54,7 +56,7 @@ target_link_libraries(testfftw1domp PRIVATE -static-libstdc++ -static-libgcc)
 endif()
 
 message("Python is " ${PYTHON_EXECUTABLE})
-message("Python prefix is " ${PYTHON_PREFIX})
+# message("Python prefix is " ${PYTHON_PREFIX})
 
 if(WIN32)
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD

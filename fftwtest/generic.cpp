@@ -3,7 +3,7 @@
 #include <pybind11/iostream.h>
 #include <pybind11/stl.h>
 
-#include <fftw3.h>
+#include <cmmnfft.h>
 namespace py = pybind11;
 
 py::array_t<std::complex<double>> fftw1d(py::array_t<std::complex<double>, py::array::c_style | py::array::forcecast> input_array)
@@ -18,14 +18,7 @@ py::array_t<std::complex<double>> fftw1d(py::array_t<std::complex<double>, py::a
     // Create new array for output
     auto result = py::array_t<std::complex<double>>(buf_info.size);
 
-    // setup FFTW plan
-    fftw_plan p = fftw_plan_dft_1d(buf_info.shape[0], reinterpret_cast<fftw_complex *>(buf_info.ptr), reinterpret_cast<fftw_complex *>(result.request().ptr), FFTW_FORWARD, FFTW_ESTIMATE);
-
-    // execute the plan
-    fftw_execute(p);
-
-    // do cleanup
-    fftw_destroy_plan(p);
+    FFTPlan{buf_info.shape[0], buf_info.ptr, result.request().ptr}.execute();
 
     return result;
 }

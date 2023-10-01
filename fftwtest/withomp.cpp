@@ -3,8 +3,8 @@
 #include <pybind11/iostream.h>
 #include <pybind11/stl.h>
 
-#include <fftw3.h>
 #include <omp.h>
+#include <cmmnfft.h>
 
 namespace py = pybind11;
 
@@ -28,20 +28,14 @@ py::array_t<std::complex<double>> manual_nogil(py::array_t<std::complex<double>,
     // Set the number of threads to use for FFTW
     fftw_plan_with_nthreads(omp_get_max_threads());
 
-    // setup FFTW plan
-    fftw_plan p = fftw_plan_dft_1d(buf_info.shape[0], reinterpret_cast<fftw_complex *>(buf_info.ptr), reinterpret_cast<fftw_complex *>(result.request().ptr), FFTW_FORWARD, FFTW_ESTIMATE);
-
     // Release the GIL
     py::gil_scoped_release release{};
 
-    // execute the plan
-    fftw_execute(p);
+    FFTPlan{buf_info.shape[0], buf_info.ptr, result.request().ptr}.execute();
 
     // Re-acquire the GIL
     py::gil_scoped_acquire acquire{};
 
-    // do cleanup
-    fftw_destroy_plan(p);
 
     return result;
 }
