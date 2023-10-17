@@ -6,7 +6,7 @@ class FFTPlan
 {
     fftw_plan Plan;
 public:
-    explicit FFTPlan(ssize_t len, void *input, void *output)
+    explicit FFTPlan(size_t len, void *input, void *output)
     : Plan{fftw_plan_dft_1d(len, reinterpret_cast<fftw_complex *>(input), reinterpret_cast<fftw_complex *>(output), FFTW_FORWARD, FFTW_ESTIMATE)}
     {}
     FFTPlan(const FFTPlan &) = delete;

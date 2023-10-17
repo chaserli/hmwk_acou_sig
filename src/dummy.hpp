@@ -13,7 +13,7 @@
 #define _STR(x) _STR_(x)
 #define _STR_(x) #x
 
-namespace Examples{
+namespace TmpMetaInfo{
 
 constexpr const char* CompilerInfo=
 
@@ -40,4 +40,5 @@ constexpr const char* CompilerInfo=
  " for Python " PY_VERSION
        ;
 
+constexpr const char *CompileTime = __DATE__ "," __TIME__;
 }

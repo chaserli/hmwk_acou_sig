@@ -1,7 +1,7 @@
 import tmphmwk as mynothing
-from testfftw1dnormal import generic as fftw1_generic
+from testfftw1d_normal import generic as fftw1_generic
 import numpy as np
-from testfftw1dnormal import forget_wisdom
+from testfftw1d_normal import forget_wisdom
 import time
 import scipy.fft as sf
 

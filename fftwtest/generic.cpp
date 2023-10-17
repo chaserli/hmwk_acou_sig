@@ -18,12 +18,12 @@ py::array_t<std::complex<double>> fftw1d(py::array_t<std::complex<double>, py::a
     // Create new array for output
     auto result = py::array_t<std::complex<double>>(buf_info.size);
 
-    FFTPlan{buf_info.shape[0], buf_info.ptr, result.request().ptr}.execute();
+    FFTPlan{(size_t)buf_info.shape[0], buf_info.ptr, result.request().ptr}.execute();
 
     return result;
 }
 
-PYBIND11_MODULE(testfftw1dnormal, m)
+PYBIND11_MODULE(testfftw1d_normal, m)
 {
     py::print("generic fftw_plan_dft_1d loaded");
     m.def("generic", &fftw1d);

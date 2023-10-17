@@ -1,9 +1,10 @@
 import tmphmwk as mynothing
-from testfftw1domp import manualomp as fftw1_omp
-import numpy as np
-from testfftw1dnormal import forget_wisdom
+from testfftw1d_omp import manualomp as fftw1_omp
+from testfftw1d_eigen import fwd_fft as eigen_fft1
+from testfftw1d_normal import forget_wisdom
 import time
 import scipy.fft as sf
+import numpy as np
 
 def time0(x):
     t0=time.time()
@@ -13,9 +14,9 @@ def time0(x):
 
 def time1(x):
     t0=time.time()
-    y = np.fft.fft(x)
+    y = eigen_fft1(x)
     t1=time.time()
-    print(f"numpy fftpack : {t1-t0}")
+    print(f"Eigen kiss fft : {t1-t0}")
 
 def time2(x):
     t0=time.time()
@@ -26,7 +27,7 @@ def time2(x):
 def prepare():
     x=[1,2,3,4]
     y = sf.fft(x)
-    y = np.fft.fft(x)
+    y = eigen_fft1(x)
     y = fftw1_omp(x)
     return y
 

@@ -13,11 +13,12 @@ std::complex<double> hankel01(double r)
 
 PYBIND11_MODULE(tmphmwk, m)
 {
-    py::print("loading custom pybind submodule bulit by", Examples::CompilerInfo,  " at " __DATE__ "," __TIME__ " ... ");
+    py::print("loading custom pybind submodule bulit by", TmpMetaInfo::CompilerInfo, " at ",TmpMetaInfo::CompileTime);
 
     m.doc() = "dummy doc";
-    m.attr("CompiledBy") = Examples::CompilerInfo;
-    m.attr("ANumber") = 0x1234567890;
+    m.attr("CompilerInfo") = TmpMetaInfo::CompilerInfo;
+    m.attr("CompileTime") = TmpMetaInfo::CompileTime;
 
     m.def("hankel01", py::vectorize(hankel01), "H_0^1 but stl");
+
 }

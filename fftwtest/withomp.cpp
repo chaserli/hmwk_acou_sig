@@ -31,7 +31,7 @@ py::array_t<std::complex<double>> manual_nogil(py::array_t<std::complex<double>,
     // Release the GIL
     py::gil_scoped_release release{};
 
-    FFTPlan{buf_info.shape[0], buf_info.ptr, result.request().ptr}.execute();
+    FFTPlan{(size_t)buf_info.shape[0], buf_info.ptr, result.request().ptr}.execute();
 
     // Re-acquire the GIL
     py::gil_scoped_acquire acquire{};
@@ -40,7 +40,7 @@ py::array_t<std::complex<double>> manual_nogil(py::array_t<std::complex<double>,
     return result;
 }
 
-PYBIND11_MODULE(testfftw1domp, m)
+PYBIND11_MODULE(testfftw1d_omp, m)
 {
     py::print("omp fftw_plan_dft_1d loaded");
     m.def("manualomp",&manual_nogil);
