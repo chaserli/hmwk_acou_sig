@@ -1,4 +1,4 @@
-name: only gcc build all
+name: gcc try fftw
 
 on:
   workflow_dispatch:
@@ -31,4 +31,8 @@ jobs:
         run: cmake --build ./build --config MinSizeRel --target all --
 
       - name: just to see if built dll can be imported
-        run: cp tests/test_justforci.py build/ && cd build && python test_justforci.py && rm test_justforci.py && cd -
+        run: |
+          cp tests/test_justforci.py build/fftwtest
+          cd build && python -c "import tmphmwk"
+          cd fftwtest && python test_justforci.py
+          rm test_justforci.py && cd ../../

@@ -1,4 +1,3 @@
-import tmphmwk as mynothing
 from testfftw1d_omp import manualomp as fft1_omp
 from testfftw1d_eigen import fwd_fft as fft1_eigen
 from testfftw1d_normal import generic as fft1_generic

@@ -13,18 +13,21 @@ namespace py = pybind11;
 Eigen::FFT<double> EigenFFT;
 Eigen::VectorXcd UseEigenFFT(const Eigen::Ref<const Eigen::VectorXcd>& input)
 {
-    py::gil_scoped_release {};
+    py::gil_scoped_release rel;
 
     Eigen::VectorXcd output {input.size()};
     EigenFFT.fwd(output.data(),input.data(),input.size());
 
-    py::gil_scoped_acquire {};
+    py::gil_scoped_acquire acq;
     return output;
 }
 
 
 PYBIND11_MODULE(testfftw1d_eigen, m)
 {
-    py::print("Eigen",EIGEN_WORLD_VERSION, ".",EIGEN_MAJOR_VERSION,".",EIGEN_MINOR_VERSION, "internal kiss fft loaded");
+    std::string info ="Eigen ";
+    info+=std::to_string(EIGEN_WORLD_VERSION)+"."+std::to_string(EIGEN_MAJOR_VERSION)+"."+std::to_string(EIGEN_MINOR_VERSION);
+    info+=" internal kiss fft loaded";
+    py::print(info.c_str());
     m.def("fwd_fft", &UseEigenFFT);
 }
