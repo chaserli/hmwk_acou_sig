@@ -9,6 +9,8 @@
 
 #include <omp.h>
 
+#include "../src/dummy.hpp"
+
 namespace py = pybind11;
 Eigen::FFT<double> EigenFFT;
 Eigen::VectorXcd UseEigenFFT(const Eigen::Ref<const Eigen::VectorXcd>& input)
@@ -25,9 +27,6 @@ Eigen::VectorXcd UseEigenFFT(const Eigen::Ref<const Eigen::VectorXcd>& input)
 
 PYBIND11_MODULE(testfftw1d_eigen, m)
 {
-    std::string info ="Eigen ";
-    info+=std::to_string(EIGEN_WORLD_VERSION)+"."+std::to_string(EIGEN_MAJOR_VERSION)+"."+std::to_string(EIGEN_MINOR_VERSION);
-    info+=" internal kiss fft loaded";
-    py::print(info.c_str());
+    py::print("Eigen " _STR(EIGEN_WORLD_VERSION) "." _STR(EIGEN_MAJOR_VERSION) "." _STR(EIGEN_MINOR_VERSION)" project built by ", TmpMetaInfo::CompilerInfo);
     m.def("fwd_fft", &UseEigenFFT);
 }

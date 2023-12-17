@@ -23,16 +23,8 @@ def time2(x):
     t1=time.time()
     print(f"regular fftw call : {t1-t0}")
 
-def prepare():
-    x=[1,2,3,4]
-    y = sf.fft(x)
-    y = np.fft.fft(x)
-    y = fftw1_generic(x)
-    return y
-
 if __name__ == "__main__":
     N=55555555
-    prepare()
     for i in range(8):
         x = np.random.randn(N)
         print(f'---------run {i} starts--{N}--')

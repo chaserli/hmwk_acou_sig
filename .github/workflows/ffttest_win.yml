@@ -1,0 +1,52 @@
+name: msvc try fftw
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+          cache: 'pip'
+      - name: Set up MSVC
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Setup Ninja
+        run: |
+          choco install ninja -y
+
+      - name: Set up CMake
+        uses: lukka/get-cmake@latest
+      - name: Set up vcpkg
+        uses: lukka/run-vcpkg@v10
+        with:
+          vcpkgGitCommitId: 2a6371b01420d8820d158b4707e79931feba27aa
+          vcpkgDirectory: '${{ github.workspace }}/vcpkg'
+
+      - name: Install fftw
+        run: ${{ github.workspace }}/vcpkg/vcpkg install fftw3[avx2,sse2,core,openmp]:x64-windows-static
+
+      - name: configure
+        run: cmake -S . -B ./build -G Ninja -DCMAKE_CXX_COMPILER=cl -DCMAKE_BUILD_TYPE=MinSizeRel -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET:STRING=x64-windows-static
+
+      - name: build
+        run: cmake --build ./build --config MinSizeRel --target all --
+
+      - name: just to see if built dll can be imported
+        run: |
+          pip install numpy scipy
+          copy tests\test_justforci.py build\fftwtest
+          cd build\fftwtest
+          python test_justforci.py

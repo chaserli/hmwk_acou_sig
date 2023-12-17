@@ -16,7 +16,7 @@ def time1(x):
     t0=time.time()
     y = eigen_fft1(x)
     t1=time.time()
-    print(f"Eigen kiss fft : {t1-t0}")
+    print(f"Eigen fft using fftw: {t1-t0}")
 
 def time2(x):
     t0=time.time()

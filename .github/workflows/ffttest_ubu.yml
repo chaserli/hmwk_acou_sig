@@ -21,11 +21,18 @@ jobs:
           python-version: "3.11"
           cache: 'pip'
 
-      - name: Install fftw
-        run: sudo apt install libfftw3-dev ninja-build neofetch && pip install numpy scipy && neofetch
+      - name: Set up vcpkg
+        uses: lukka/run-vcpkg@v10
+        with:
+          vcpkgGitCommitId: 2a6371b01420d8820d158b4707e79931feba27aa
+          vcpkgDirectory: '${{ github.workspace }}/vcpkg'
 
+      - name: Install fftw
+        run: ${{ github.workspace }}/vcpkg/vcpkg install fftw3[avx2,sse2,core,openmp]
+      - name: Install ninja
+        run: sudo apt install neofetch ninja-build && pip install numpy scipy && neofetch
       - name: configure
-        run: cmake -S . -B ./build -G Ninja -DCMAKE_CXX_COMPILER=g++ -DCMAKE_BUILD_TYPE=MinSizeRel -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE
+        run: cmake -S . -B ./build -G Ninja -DCMAKE_CXX_COMPILER=g++ -DCMAKE_BUILD_TYPE=MinSizeRel -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake
 
       - name: build
         run: cmake --build ./build --config MinSizeRel --target all --
@@ -35,4 +42,3 @@ jobs:
           cp tests/test_justforci.py build/fftwtest
           cd build && python -c "import tmphmwk"
           cd fftwtest && python test_justforci.py
-          rm test_justforci.py && cd ../../
